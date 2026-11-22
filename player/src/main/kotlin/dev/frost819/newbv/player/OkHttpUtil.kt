@@ -1,6 +1,7 @@
 package dev.frost819.newbv.player
 
 import android.content.Context
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
@@ -29,9 +30,10 @@ object OkHttpUtil {
      * 在进程内共享，这就是播放器侧连接与线程数的全局上限。
      *
      * @param context Android Context，用于读取 assets 中的 CA 证书文件
+     * @param dns DNS policy used for media requests.
      * @return 配置好 SSL 和域名验证的 OkHttpClient
      */
-    fun generateCustomSslOkHttpClient(context: Context): OkHttpClient {
+    fun generateCustomSslOkHttpClient(context: Context, dns: Dns = Dns.SYSTEM): OkHttpClient {
         val certificateFactory = CertificateFactory.getInstance("X.509")
         val customCaMap =
             mapOf(
@@ -72,6 +74,7 @@ object OkHttpUtil {
 
         return OkHttpClient
             .Builder()
+            .dns(dns)
             .sslSocketFactory(
                 sslContext.socketFactory,
                 trustManagerFactory.trustManagers[0] as X509TrustManager,

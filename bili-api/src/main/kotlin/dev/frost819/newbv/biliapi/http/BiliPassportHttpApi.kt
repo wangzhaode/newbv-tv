@@ -38,6 +38,12 @@ object BiliPassportHttpApi {
     private fun createClient() {
         client =
             HttpClient(OkHttp) {
+                engine {
+                    config {
+                        dns(ApiDns.current())
+                        eventListener(ApiConnectionLog)
+                    }
+                }
                 BiliUserAgent()
                 install(ContentNegotiation) {
                     json(

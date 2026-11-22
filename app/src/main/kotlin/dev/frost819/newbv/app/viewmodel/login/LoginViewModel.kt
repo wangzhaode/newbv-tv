@@ -78,7 +78,7 @@ class LoginViewModel
                     }
                     startPolling(qrData.key, isAppQr = true)
                 }.onFailure { error ->
-                    logger.error(error) { "Failed to request app QR code" }
+                    logger.error { "Failed to request app QR code: ${error.javaClass.simpleName}" }
                     _uiState.update {
                         it.copy(
                             state = QrLoginState.Error,
@@ -108,7 +108,7 @@ class LoginViewModel
                     }
                     startPolling(qrData.key, isAppQr = false)
                 }.onFailure { error ->
-                    logger.error(error) { "Failed to request web QR code" }
+                    logger.error { "Failed to request web QR code: ${error.javaClass.simpleName}" }
                     _uiState.update {
                         it.copy(
                             state = QrLoginState.Error,
@@ -175,7 +175,7 @@ class LoginViewModel
                                 }
                             }
                         }.onFailure { error ->
-                            logger.error(error) { "Failed to check QR login state" }
+                            logger.error { "Failed to check QR login state: ${error.javaClass.simpleName}" }
                             _uiState.update {
                                 it.copy(
                                     state = QrLoginState.Error,

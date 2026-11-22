@@ -17,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
-import dev.frost819.newbv.BuildConfig
 import dev.frost819.newbv.app.ui.component.FocusSaver
 import dev.frost819.newbv.app.ui.component.focusSaverItem
 import dev.frost819.newbv.app.ui.component.settings.OptionDialog
@@ -32,7 +30,7 @@ import dev.frost819.newbv.data.datastore.Prefs
 /**
  * 其他设置页。
  *
- * 接口选择/崩溃上报/查看日志。
+ * 接口选择、IPv4 测试和本地日志。
  *
  * @param onNavigateToLogViewer 跳转日志查看页回调。
  */
@@ -46,7 +44,10 @@ fun OtherSetting(
 
     var showPreferedApiDialog by remember { mutableStateOf(false) }
     var selectedApi by remember { mutableStateOf(Prefs.apiType) }
-    var crashReportEnabled by remember { mutableStateOf(Prefs.crashReportEnabled) }
+    var showNetworkModeDialog by remember { mutableStateOf(false) }
+    var networkMode by remember {
+        mutableStateOf(if (Prefs.ipv4Only) NetworkMode.Ipv4Only else NetworkMode.System)
+    }
 
     Column(
         modifier =
@@ -70,35 +71,15 @@ fun OtherSetting(
         )
 
         SettingListItem(
-            title = "上传崩溃日志",
-            supportText = "崩溃时自动上传日志到开发者服务器",
-            trailingContent = {
-                Switch(
-                    checked = crashReportEnabled,
-                    onCheckedChange = {
-                        crashReportEnabled = it
-                        Prefs.crashReportEnabled = it
-                    },
-                )
-            },
-            onClick = {
-                crashReportEnabled = !crashReportEnabled
-                Prefs.crashReportEnabled = crashReportEnabled
-            },
+            title = "HTTP 网络模式",
+            supportText = "${networkMode.label} · 完全退出应用并重新打开后生效",
+            onClick = { showNetworkModeDialog = true },
         )
-
-        if (BuildConfig.DEBUG) {
-            SettingListItem(
-                title = "触发测试崩溃",
-                supportText = "仅用于测试崩溃上传流程",
-                onClick = { throw RuntimeException("Test crash for upload verification") },
-            )
-        }
 
         SettingListItem(
             modifier = screenFocusSaver?.let { Modifier.focusSaverItem(it, "content_log_viewer") } ?: Modifier,
             title = "查看日志",
-            supportText = "查看崩溃日志和应用日志，支持扫码下载",
+            supportText = "查看电视上的崩溃日志和应用日志",
             onClick = onNavigateToLogViewer,
         )
     }
@@ -115,4 +96,22 @@ fun OtherSetting(
             getDisplayName = { it.displayName },
         )
     }
+
+    if (showNetworkModeDialog) {
+        OptionDialog(
+            options = NetworkMode.entries.toTypedArray(),
+            selectedOption = networkMode,
+            onDismiss = { showNetworkModeDialog = false },
+            onSelect = {
+                Prefs.ipv4Only = it == NetworkMode.Ipv4Only
+                networkMode = it
+            },
+            getDisplayName = { it.label },
+        )
+    }
+}
+
+private enum class NetworkMode(val label: String) {
+    System("系统默认"),
+    Ipv4Only("仅 IPv4"),
 }

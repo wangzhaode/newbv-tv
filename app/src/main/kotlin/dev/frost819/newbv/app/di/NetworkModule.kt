@@ -6,7 +6,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.frost819.newbv.BuildConfig
 import dev.frost819.newbv.app.data.AccountRepositoryImpl
 import dev.frost819.newbv.app.data.danmaku.DanmakuFilterRepository
 import dev.frost819.newbv.app.network.HttpServer
@@ -32,8 +31,8 @@ import dev.frost819.newbv.biliapi.repositories.VideoDetailRepository
 import dev.frost819.newbv.biliapi.repositories.VideoPlayRepository
 import dev.frost819.newbv.core.interaction.InteractionTracker
 import dev.frost819.newbv.core.log.CrashHandler
+import dev.frost819.newbv.biliapi.http.ApiDns
 import dev.frost819.newbv.core.log.CrashUploader
-import dev.frost819.newbv.data.datastore.Prefs
 import dev.frost819.newbv.data.db.dao.UserDao
 import dev.frost819.newbv.data.repository.AccountRepository
 import dev.frost819.newbv.data.repository.SearchHistoryRepository
@@ -57,10 +56,7 @@ object NetworkModule {
     /**
      * 提供 [CrashUploader] 单例。
      *
-     * 使用 [BuildConfig.CRASH_REPORT_TOKEN]（从 `local.properties` 的 `crashReport.token` 注入，
-     * 发布构建由 CI 写入）。该 token 对应 Worker 的 `CRASH_REPORT_TOKEN`，只允许上传崩溃日志；
-     * token 为空时上传功能不可用（调用时静默跳过）。
-     * 开关状态通过 [Prefs.crashReportEnabled] 实时读取，设置页切换后立即生效。
+     * 本地测试版不允许上传崩溃日志。
      */
     @Provides
     @Singleton
@@ -69,8 +65,8 @@ object NetworkModule {
     ): CrashUploader =
         CrashUploader(
             context = context,
-            authToken = BuildConfig.CRASH_REPORT_TOKEN,
-            isEnabled = { Prefs.crashReportEnabled },
+            authToken = "",
+            isEnabled = { false },
         )
 
     /**
@@ -355,6 +351,7 @@ object NetworkModule {
             engine {
                 config {
                     connectTimeout(10, TimeUnit.SECONDS)
+                    dns(ApiDns.current())
                     readTimeout(15, TimeUnit.SECONDS)
                     writeTimeout(15, TimeUnit.SECONDS)
                 }

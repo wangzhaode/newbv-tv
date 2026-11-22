@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.frost819.newbv.app.util.MediaCodecVideoCapabilityProvider
 import dev.frost819.newbv.app.util.VideoCapabilityProvider
+import dev.frost819.newbv.biliapi.http.ApiDns
 import dev.frost819.newbv.player.CdnSelector
 import dev.frost819.newbv.player.OkHttpCdnSelector
 import dev.frost819.newbv.player.OkHttpUtil
@@ -36,7 +37,7 @@ object PlayerModule {
     @Singleton
     fun providePlayerHttpClient(
         @ApplicationContext context: Context,
-    ): OkHttpClient = OkHttpUtil.generateCustomSslOkHttpClient(context)
+    ): OkHttpClient = OkHttpUtil.generateCustomSslOkHttpClient(context, ApiDns.current())
 
     /**
      * 提供 [ExoPlayerFactory] 单例。

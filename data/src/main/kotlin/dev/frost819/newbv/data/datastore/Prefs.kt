@@ -231,6 +231,9 @@ object Prefs {
 
     // --- 网络 & API（PRD 7.5） ---
 
+    /** Whether HTTP clients use only IPv4 after the app is restarted. */
+    var ipv4Only by pref(PrefKeys.ipv4Only, true)
+
     /** 接口类型（Web/App）。 */
     var apiType by pref(
         PrefKeys.apiType,

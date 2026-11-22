@@ -11,7 +11,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
-import io.ktor.http.URLBuilder
 import io.ktor.http.clone
 import io.ktor.http.encodedPath
 import io.ktor.http.plus
@@ -117,7 +116,6 @@ fun HttpRequestBuilder.encAppPost() {
     val sign = (sortedQueryString + APP_SEC).md5()
     parameters += Parameters.build { append("sign", sign) }
     setBody(FormDataContent(parameters))
-    println("sign: $sign")
 }
 
 fun HttpRequestBuilder.encAppGet() {
@@ -131,7 +129,6 @@ fun HttpRequestBuilder.encAppGet() {
 
     val sign = (sortedQueryString + APP_SEC).md5()
     parameter("sign", sign)
-    println("sign: $sign")
 }
 
 suspend fun HttpRequestBuilder.encWbi() {
@@ -167,16 +164,6 @@ fun HttpClient.encApiSign() =
                 return@intercept execute(request)
             }
 
-            val getUrlWithoutAccessToken: (URLBuilder) -> String = { urlBuilder ->
-                urlBuilder
-                    .clone()
-                    .apply {
-                        if (parameters.contains("access_key") && !parameters["access_key"].isNullOrBlank()) {
-                            parameters["access_key"] = "HIDDEN_ACCESS_TOKEN"
-                        }
-                    }.toString()
-            }
-
             when (request.method) {
                 HttpMethod.Get -> {
                     val isWbiRequest =
@@ -185,12 +172,9 @@ fun HttpClient.encApiSign() =
                             request.url.encodedPath.contains("/pgc/player/web/v2/playurl") ||
                             request.url.encodedPath.contains("/xlive/web-room/v1/index/getDanmuInfo")
                     if (isWbiRequest) {
-                        println("Enc wbi for get request: ${getUrlWithoutAccessToken(request.url)}")
                         request.encWbi()
                     } else if (request.isAppRequest) {
-                        println("Enc app sign for get request: ${getUrlWithoutAccessToken(request.url)}")
                         request.encAppGet()
-                        println(getUrlWithoutAccessToken(request.url))
                     }
                 }
 
@@ -200,7 +184,6 @@ fun HttpClient.encApiSign() =
                     val isParametersContainKeywords = parameters.contains("access_key")
                     val isPathContainKeywords = request.url.encodedPath.contains("passport")
                     if (isParametersContainKeywords || isPathContainKeywords) {
-                        println("Enc app sign for post request: ${getUrlWithoutAccessToken(request.url)}")
                         request.encAppPost()
                     }
                 }

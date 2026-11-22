@@ -28,6 +28,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
+import dev.frost819.newbv.biliapi.http.ApiDns
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -69,6 +70,7 @@ object LiveDataWebSocket {
     private val wsClient by lazy {
         OkHttpClient
             .Builder()
+            .dns(ApiDns.current())
             .pingInterval(30, TimeUnit.SECONDS)
             .build()
     }

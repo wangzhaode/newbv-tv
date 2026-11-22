@@ -2,7 +2,6 @@ package dev.frost819.newbv.app.viewmodel.settings
 
 import android.app.Application
 import com.google.common.truth.Truth.assertThat
-import dev.frost819.newbv.app.network.HttpServer
 import dev.frost819.newbv.core.log.CrashHandler
 import io.mockk.every
 import io.mockk.mockk
@@ -21,13 +20,12 @@ import java.nio.file.Files
 /**
  * [LogViewerViewModel] 的单元测试。
  *
- * 通过 MockK 模拟 [HttpServer] 和 [CrashHandler]，
- * 验证日志类型判断、URL 生成、日志刷新与手动日志创建逻辑。
+ * 通过 MockK 模拟 [CrashHandler]，
+ * 验证日志类型判断、日志刷新与手动日志创建逻辑。
  * init 块中的协程运行在 Dispatchers.IO 上，测试中使用 Thread.sleep 等待完成。
  */
 class LogViewerViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var httpServer: HttpServer
     private lateinit var crashHandler: CrashHandler
     private lateinit var viewModel: LogViewerViewModel
     private lateinit var tempDir: File
@@ -37,13 +35,11 @@ class LogViewerViewModelTest {
         Dispatchers.setMain(testDispatcher)
         tempDir = Files.createTempDirectory("logviewer_test").toFile()
 
-        httpServer = mockk(relaxed = true)
-        every { httpServer.getPort() } returns 8080
         crashHandler = mockk(relaxed = true)
         every { crashHandler.listManualLogs() } returns emptyList()
         every { crashHandler.listCrashLogs() } returns emptyList()
         val app = mockk<Application>(relaxed = true)
-        viewModel = LogViewerViewModel(app, httpServer, crashHandler)
+        viewModel = LogViewerViewModel(app, crashHandler)
 
         Thread.sleep(300)
     }
@@ -53,30 +49,6 @@ class LogViewerViewModelTest {
         Dispatchers.resetMain()
         unmockkAll()
         tempDir.deleteRecursively()
-    }
-
-    // ── LogViewerUiState ──────────────────────────────────────────────
-
-    @Test
-    fun `LogViewerUiState default values`() {
-        val state = LogViewerUiState()
-        assertThat(state.logFiles).isEmpty()
-        assertThat(state.serverAddress).isEmpty()
-        assertThat(state.isServerReady).isFalse()
-    }
-
-    @Test
-    fun `LogViewerUiState with values`() {
-        val files = listOf(File("test.log"))
-        val state =
-            LogViewerUiState(
-                logFiles = files,
-                serverAddress = "192.168.1.1:8080",
-                isServerReady = true,
-            )
-        assertThat(state.logFiles).hasSize(1)
-        assertThat(state.serverAddress).isEqualTo("192.168.1.1:8080")
-        assertThat(state.isServerReady).isTrue()
     }
 
     // ── getLogTypeDisplayName ─────────────────────────────────────────
@@ -107,25 +79,6 @@ class LogViewerViewModelTest {
         val file = File("no_prefix.txt")
 
         assertThat(viewModel.getLogTypeDisplayName(file)).isEqualTo("未知")
-    }
-
-    // ── getFileUrl & getServerUrl ─────────────────────────────────────
-
-    @Test
-    fun `getFileUrl returns correct URL format with server address`() {
-        val file = File("logs_manual_test.log")
-        val url = viewModel.getFileUrl(file)
-
-        assertThat(url).contains("http://")
-        assertThat(url).contains("/api/logs/logs_manual_test.log")
-    }
-
-    @Test
-    fun `getServerUrl returns correct URL format`() {
-        val url = viewModel.getServerUrl()
-
-        assertThat(url).startsWith("http://")
-        assertThat(url).endsWith("/")
     }
 
     // ── refreshLogs ───────────────────────────────────────────────────
@@ -175,13 +128,5 @@ class LogViewerViewModelTest {
 
         verify { crashHandler.createManualLog() }
         assertThat(viewModel.uiState.value.logFiles).isNotEmpty()
-    }
-
-    // ── server lifecycle ──────────────────────────────────────────────
-
-    @Test
-    fun `onCleared stops httpServer`() {
-        httpServer.stop()
-        verify { httpServer.stop() }
     }
 }

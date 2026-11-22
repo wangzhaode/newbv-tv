@@ -10,8 +10,8 @@ import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
 import dagger.hilt.android.HiltAndroidApp
 import dev.frost819.newbv.app.data.danmaku.DanmakuFilterRepository
-import dev.frost819.newbv.app.network.HttpServer
 import dev.frost819.newbv.app.util.CacheManager
+import dev.frost819.newbv.biliapi.http.ApiDns
 import dev.frost819.newbv.biliapi.http.BiliHttpApi
 import dev.frost819.newbv.biliapi.repositories.AuthRepository
 import dev.frost819.newbv.biliapi.repositories.ChannelRepository
@@ -36,7 +36,6 @@ import javax.inject.Provider
  * 1. Hilt 依赖注入（由 [HiltAndroidApp] 自动处理）
  * 2. [Prefs] 偏好设置初始化（阻塞读取 DataStore 首帧）
  * 3. [CrashHandler] 全局崩溃处理（通过 Hilt 注入，构造时自动 install）
- * 4. [HttpServer] 本地日志管理服务器（通过 Hilt 注入，按需启动）
  */
 @HiltAndroidApp
 class BVApplication : Application() {
@@ -50,9 +49,6 @@ class BVApplication : Application() {
 
     @Inject
     lateinit var crashUploader: CrashUploader
-
-    @Inject
-    lateinit var httpServer: HttpServer
 
     @Inject
     lateinit var authRepository: AuthRepository
@@ -76,6 +72,8 @@ class BVApplication : Application() {
         super.onCreate()
 
         Prefs.init(dataStore)
+        ApiDns.ipv4Only = Prefs.ipv4Only
+        logger.info { "HTTP DNS mode: ${if (ApiDns.ipv4Only) "IPv4 only" else "system"}" }
 
         val buvid3 = Prefs.buvid3
         val deviceCookies = Prefs.deviceCookies
@@ -159,7 +157,7 @@ class BVApplication : Application() {
                 .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .diskCache(imageDiskCache)
                 .components {
-                    add(OkHttpNetworkFetcherFactory(OkHttpClient()))
+                    add(OkHttpNetworkFetcherFactory(OkHttpClient.Builder().dns(ApiDns.current()).build()))
                 }.build()
         }
 

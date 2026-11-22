@@ -270,6 +270,18 @@ object BiliHttpApi {
 
     private fun createClient(): HttpClient =
         HttpClient(OkHttp) {
+            engine {
+                config {
+                    dns(ApiDns.current())
+                    eventListenerFactory { call ->
+                        if (call.request().url.host == "api.bilibili.com") {
+                            ApiConnectionLog
+                        } else {
+                            okhttp3.EventListener.NONE
+                        }
+                    }
+                }
+            }
             BiliUserAgent()
             install(ContentNegotiation) { json(json) }
             install(ContentEncoding) {

@@ -42,6 +42,11 @@ object BiliLiveHttpApi {
     private fun createClient() {
         client =
             HttpClient(OkHttp) {
+                engine {
+                    config {
+                        dns(ApiDns.current())
+                    }
+                }
                 BiliUserAgent()
                 install(ContentNegotiation) {
                     json(

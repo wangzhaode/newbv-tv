@@ -72,7 +72,9 @@ android {
         }
         debug {
             isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
+            isDebuggable = false
+            applicationIdSuffix = ".local"
+            versionNameSuffix = "-local"
         }
     }
 
@@ -197,7 +199,6 @@ dependencies {
     implementation(project(":danmaku-engine"))
     implementation(libs.androidsvg)
     implementation(libs.qrcode)
-    debugImplementation(libs.leakcanary)
 
     // === Testing ===
     testImplementation(libs.junit.jupiter)
