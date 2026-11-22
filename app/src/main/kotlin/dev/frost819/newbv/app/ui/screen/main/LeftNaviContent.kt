@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
+import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import dev.frost819.newbv.app.ui.component.FocusSaver
 import dev.frost819.newbv.app.ui.component.focusSaverItem
@@ -81,6 +83,14 @@ fun LeftNaviContent(
     focusSaver: FocusSaver,
 ) {
     val focusManager = LocalFocusManager.current
+    val colors = MaterialTheme.colorScheme
+    val railItemColors = NavigationRailItemDefaults.colors(
+        selectedIconColor = colors.onPrimaryContainer,
+        selectedTextColor = colors.onSurface,
+        indicatorColor = colors.primaryContainer,
+        unselectedIconColor = colors.onSurfaceVariant,
+        unselectedTextColor = colors.onSurfaceVariant,
+    )
     NavigationRail(
         modifier =
             modifier
@@ -113,6 +123,7 @@ fun LeftNaviContent(
                 }
             },
             selected = userIsFocused,
+            colors = railItemColors,
             icon = {
                 if (isLogin) {
                     Surface(
@@ -131,14 +142,14 @@ fun LeftNaviContent(
                                     .size(40.dp)
                                     .clip(CircleShape),
                             model = avatar,
-                            contentDescription = null,
+                            contentDescription = "个人资料",
                             contentScale = ContentScale.FillBounds,
                         )
                     }
                 } else {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
-                        contentDescription = null,
+                        contentDescription = "登录",
                     )
                 }
             },
@@ -166,6 +177,8 @@ fun LeftNaviContent(
                             .selectionIndicator(indicatorColor),
                     onClick = { onLeftNaviItemChanged(item) },
                     selected = isFocused,
+                    colors = railItemColors,
+                    label = { Text(item.displayName, style = MaterialTheme.typography.labelSmall) },
                     icon = {
                         Icon(
                             imageVector = item.displayIcon,
@@ -186,10 +199,11 @@ fun LeftNaviContent(
                     },
             onClick = onOpenSettings,
             selected = settingsIsFocused,
+            colors = railItemColors,
             icon = {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = null,
+                    contentDescription = "设置",
                 )
             },
         )

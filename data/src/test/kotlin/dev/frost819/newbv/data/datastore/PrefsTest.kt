@@ -158,8 +158,8 @@ class PrefsTest {
     }
 
     @Test
-    fun `default firstHomeTopNavItem is Dynamics`() {
-        assertThat(Prefs.firstHomeTopNavItem).isEqualTo(HomeTopNavItem.Dynamics)
+    fun `default firstHomeTopNavItem is Recommend`() {
+        assertThat(Prefs.firstHomeTopNavItem).isEqualTo(HomeTopNavItem.Recommend)
     }
 
     @Test

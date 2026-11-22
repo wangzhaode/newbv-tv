@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
@@ -77,6 +79,7 @@ fun SmallVideoCard(
 ) {
     var showActions by remember { mutableStateOf(false) }
     var releaseLongPress by remember { mutableStateOf(false) }
+    var cardHasFocus by remember { mutableStateOf(false) }
     val firstButtonRequester = remember { FocusRequester() }
     val isTouchMode = currentInputMethod() == InputMethod.Touch
 
@@ -98,7 +101,10 @@ fun SmallVideoCard(
         }
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    val cardShape = RoundedCornerShape(12.dp)
+    Column(
+        modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface, cardShape),
+    ) {
         Card(
             onClick = { if (!showActions) onClick() },
             onLongClick = {
@@ -107,20 +113,22 @@ fun SmallVideoCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1.6f)
+                    .aspectRatio(16f / 9f)
                     .touchClickable(
                         onClick = { if (!showActions) onClick() },
                         onLongClick = { if (hasAnyAction) showActions = true },
                     ).onFocusChanged { focusState ->
+                        cardHasFocus = focusState.hasFocus
                         if (!focusState.hasFocus) showActions = false
                     },
-            shape = CardDefaults.shape(MaterialTheme.shapes.large),
+            shape = CardDefaults.shape(cardShape),
+            scale = CardDefaults.scale(focusedScale = 1.035f),
             border =
                 CardDefaults.border(
                     focusedBorder =
                         Border(
                             border = androidx.compose.foundation.BorderStroke(3.dp, MaterialTheme.colorScheme.border),
-                            shape = MaterialTheme.shapes.large,
+                            shape = cardShape,
                         ),
                 ),
         ) {
@@ -293,6 +301,7 @@ fun SmallVideoCard(
             title = data.title,
             upName = data.upName,
             pubTime = data.pubTime,
+            focused = cardHasFocus,
         )
     }
 }
@@ -332,13 +341,13 @@ private fun CardCover(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                            .height(45.dp)
                     .background(
                         Brush.verticalGradient(
                             colors =
                                 listOf(
                                     Color.Transparent,
-                                    Color.Black.copy(alpha = 0.5f),
+                                    Color.Black.copy(alpha = 0.83f),
                                 ),
                         ),
                     ),
@@ -348,7 +357,7 @@ private fun CardCover(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (play.isNotBlank()) {
@@ -383,12 +392,16 @@ private fun CardCover(
                 )
             }
             Spacer(Modifier.weight(1f))
-            Text(
-                text = time,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White,
-                maxLines = 1,
-            )
+            if (time.isNotBlank()) {
+                Text(
+                    text = time,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    maxLines = 1,
+                    modifier = Modifier.background(Color.Black.copy(alpha = 0.72f), RoundedCornerShape(5.dp))
+                        .padding(horizontal = 5.dp, vertical = 2.dp),
+                )
+            }
         }
 
         if (progress != null && progress > 0f) {
@@ -422,13 +435,16 @@ private fun CardInfo(
     title: String,
     upName: String,
     pubTime: String?,
+    focused: Boolean = false,
 ) {
     Column(
-        modifier = modifier.padding(vertical = 6.dp),
+        modifier = modifier.padding(horizontal = 8.dp, vertical = 8.dp),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = if (focused) MaterialTheme.colorScheme.border else MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth(),

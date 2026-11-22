@@ -3,7 +3,7 @@
     <style name="Theme.NewBV.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@android:color/black</item>
         <item name="postSplashScreenTheme">@style/Theme.NewBV</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/lory_mark</item>
     </style>
 
     <style name="Theme.NewBV" parent="Theme.Material3.DayNight.NoActionBar">

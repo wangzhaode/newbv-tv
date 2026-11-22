@@ -5,18 +5,18 @@ import androidx.compose.ui.graphics.Color
 /**
  * new BV 品牌色板。
  *
- * 以低饱和蓝紫与青绿色为核心，延伸出辅助色与中性色。
+ * 暖粉色用于主要交互，青绿色保留给辅助状态。
  * 所有颜色以 `Color` 表示，供 [BVTheme] 构建 colorScheme。
  */
 object BVColors {
-    /** 低饱和蓝紫，作为 new BV 的主品牌色。 */
-    val Primary = Color(0xFF7773AD)
+    /** 深色主题中的品牌色，兼顾白色按钮文字的可读性。 */
+    val Primary = Color(0xFFAB2E62)
 
     /** 深色背景下使用的主色变体。 */
-    val PrimaryStrong = Color(0xFF5E5A8B)
+    val PrimaryStrong = Color(0xFF982451)
 
     /** 浅色背景下使用的主色变体。 */
-    val PrimaryLight = Color(0xFF9995CF)
+    val PrimaryLight = Color(0xFFFFB9D4)
 
     /** 低饱和青绿，用于辅助操作和信息状态。 */
     val Secondary = Color(0xFF5B9B94)
@@ -35,18 +35,18 @@ object BVColors {
     val Red = Color(0xFFC87878)
 
     /** 深色主题中性色。 */
-    val DarkBackground = Color(0xFF171717)
-    val DarkSurface = Color(0xFF222222)
-    val DarkSurfaceVariant = Color(0xFF303030)
+    val DarkBackground = Color(0xFF141118)
+    val DarkSurface = Color(0xFF1D1722)
+    val DarkSurfaceVariant = Color(0xFF332638)
     val DarkOnBackground = Color(0xFFF2F2F2)
     val DarkOnSurface = Color(0xFFF2F2F2)
     val DarkOnSurfaceVariant = Color(0xFFB8B8B8)
-    val DarkBorder = PrimaryLight
+    val DarkBorder = Color(0xFFFF91BD)
 
     /** 浅色主题中性色。 */
-    val LightBackground = Color(0xFFF5F7FB)
+    val LightBackground = Color(0xFFFFF6FA)
     val LightSurface = Color(0xFFFFFFFF)
-    val LightSurfaceVariant = Color(0xFFE8ECF5)
+    val LightSurfaceVariant = Color(0xFFF4E4EC)
     val LightOnBackground = Color(0xFF172033)
     val LightOnSurface = Color(0xFF172033)
     val LightOnSurfaceVariant = Color(0xFF59657C)

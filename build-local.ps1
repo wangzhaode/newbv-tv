@@ -26,7 +26,9 @@ Push-Location $PSScriptRoot
 try {
     & $gradle --console=plain --max-workers=4 --no-watch-fs @tasks
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    Get-ChildItem 'app/build/outputs/apk/debug' -Filter '*.apk' | Select-Object -ExpandProperty FullName
+    Get-ChildItem 'app/build/outputs/apk/debug' -Filter '*.apk' |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1 -ExpandProperty FullName
 } finally {
     Pop-Location
 }

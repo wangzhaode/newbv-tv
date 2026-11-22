@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +27,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -47,6 +48,7 @@ import dev.frost819.newbv.core.focus.touchClickable
  * @param isLargePadding 内容区未获焦点时使用较大内边距。
  * @param onSelectedChanged Tab 焦点切换回调。
  * @param onClick Tab 点击回调。
+ * @param leading 首页的品牌区。没有品牌区时保持居中的分类导航。
  */
 @Composable
 fun TopNav(
@@ -54,6 +56,7 @@ fun TopNav(
     items: List<TopNavItem>,
     selectedIndex: Int = 0,
     isLargePadding: Boolean,
+    leading: (@Composable () -> Unit)? = null,
     onSelectedChanged: (TopNavItem) -> Unit = {},
     onClick: (TopNavItem) -> Unit = {},
 ) {
@@ -74,14 +77,20 @@ fun TopNav(
             modifier
                 .fillMaxWidth()
                 .padding(12.dp, verticalPadding),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = if (leading == null) Arrangement.Center else Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (leading != null) {
+            leading()
+            Spacer(modifier = Modifier.width(24.dp))
+        }
         TabRow(
             modifier =
                 Modifier
                     .focusRestorer(focusRequester),
             selectedTabIndex = selectedTabIndex,
             separator = { Spacer(modifier = Modifier.width(12.dp)) },
+            indicator = { _, _ -> },
         ) {
             items.forEachIndexed { index, tab ->
                 NavItemTab(
@@ -107,8 +116,7 @@ private fun TabRowScope.NavItemTab(
     onClick: () -> Unit,
     onFocus: () -> Unit,
 ) {
-    // 统一使用品牌青绿作为 TopNav 强调色，避免各页面颜色不一致
-    val accentColor = MaterialTheme.colorScheme.secondary
+    val accentColor = MaterialTheme.colorScheme.border
     var hasFocus by remember { mutableStateOf(false) }
     val containerColor =
         if (selected) {
@@ -134,7 +142,7 @@ private fun TabRowScope.NavItemTab(
         Box(
             modifier =
                 Modifier
-                    .height(32.dp)
+                    .heightIn(min = 34.dp)
                     .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -142,6 +150,7 @@ private fun TabRowScope.NavItemTab(
                 text = topNavItem.displayName,
                 color = if (selected) accentColor else MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             )
         }
     }

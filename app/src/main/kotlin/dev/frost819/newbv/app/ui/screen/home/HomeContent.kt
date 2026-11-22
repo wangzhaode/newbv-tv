@@ -7,7 +7,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -24,8 +30,15 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
+import dev.frost819.newbv.R
 import dev.frost819.newbv.app.ui.component.FocusSaver
 import dev.frost819.newbv.app.ui.component.HomeTabItem
 import dev.frost819.newbv.app.ui.component.TopNav
@@ -68,12 +81,15 @@ fun HomeContent(
         }
 
     Material3Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopNav(
                 modifier = Modifier.focusRequester(navFocusRequester),
                 items = reorderedItems,
                 selectedIndex = reorderedItems.indexOf(HomeTabItem(selectedTab)),
                 isLargePadding = !focusOnContent,
+                leading = { HomeBrand() },
                 onSelectedChanged = { nav ->
                     val tab = (nav as HomeTabItem).item
                     selectedTab = tab
@@ -140,5 +156,27 @@ fun HomeContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeBrand() {
+    Row(
+        modifier = Modifier.padding(start = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.lory_mark),
+            contentDescription = null,
+            modifier = Modifier.size(27.dp),
+        )
+        Text(
+            text = stringResource(R.string.app_name),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+        )
     }
 }

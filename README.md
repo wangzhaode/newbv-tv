@@ -1,20 +1,29 @@
 <div align="center">
 
-<img src="app/src/main/res/drawable/ic_banner.webp" style="border-radius: 24px; margin-top: 32px;"/>
+<img src="app/src/main/res/drawable-nodpi/lory_tv_banner.png" width="320" alt="Lory TV"/>
 
-# newBV
+# Lory TV 预览版
 
-**BV 的架构重构版**
+**基于 newBV v1.2.1 的第三方 Android TV 客户端**
 
 [![Android Sdk Require](https://img.shields.io/badge/Android-5.0%2B-informational?logo=android)](https://apilevels.com/#:~:text=Jetpack%20Compose%20requires%20a%20minSdk%20of%2021%20or%20higher)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-[![Release](https://img.shields.io/github/v/release/Frost819/newBV?label=release&logo=github)](../../releases)
+[上游 newBV](https://github.com/Frost819/newBV)
 
 **newBV 不支持在中国大陆地区内使用，如有相关使用需求请使用 [云视听小电视](https://app.bilibili.com)**
 
 </div>
 
 ---
+
+本分支提供新的电视推荐首页、封面卡片和遥控器焦点样式。应用使用独立包名
+`dev.frost819.newbv.local`。在「设置 → 更多设置 → HTTP 网络模式」切换系统默认和仅 IPv4，
+完全退出应用再打开后生效。预览版默认使用 IPv4，并关闭崩溃上传、局域网日志下载和应用备份。
+
+使用 JDK 17 和 Android SDK 36 构建。Windows 在仓库根目录运行 `./build-local.ps1 -Test`，
+其他平台可运行 `./gradlew :app:assembleDebug`。APK 位于 `app/build/outputs/apk/debug/`。
+
+以下为上游项目说明。
 
 newBV 是基于 [BV](https://github.com/aaa1115910/bv) 重构的 [哔哩哔哩](https://www.bilibili.com) 第三方 `Android TV`
 客户端，使用 `Jetpack Compose` 开发，支持 `Android 5.0+`（minSdk 21）。
