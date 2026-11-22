@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="app/src/main/res/drawable-nodpi/lory_tv_banner.png" width="320" alt="Lory TV"/>
+<img src="app/src/main/res/drawable-nodpi/lory_tv_banner.png" width="320" alt="lorylory"/>
 
-# Lory TV 预览版
+# lorylory
 
 **基于 newBV v1.2.1 的第三方 Android TV 客户端**
 
